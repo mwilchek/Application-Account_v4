@@ -1,216 +1,191 @@
 package dataStructures;
 
-public class weightedGraph<data> implements WeightedGraphInterface<data>
-{
-    weightedGraph<String> graph;
-    public int index=0;
+import exceptions.Overflow;
+import exceptions.Underflow;
+
+public class weightedGraph<data> implements WeightedGraphInterface<data> {
     public static final int NULL_EDGE = 0;
-    private static final int DEFCAP = 50;
+    private static final int maxSize = 50;
+    static public String endVertex;
+    public int count = 0;
     public int maxVertices, numVertices;
     public data[] vertices;
-    private data vertex;
-    public data getVertex() {
-        return vertex;
-    }
-    public void setVertex(data vertex) {
-        this.vertex = vertex;
-    }
-    public data[] getVertices() {
-        return vertices;
-    }
-    public void setVertices(data[] vertices) {
-        this.vertices = vertices;
-    }
+
+    weightedGraph<String> graph;
+    private data node;
     private int[][] edges;
     private boolean[] marks;
-    static public String endVertex;
+
+    /** Instantiates a graph with capacity maxSize vertices */
     @SuppressWarnings("unchecked")
-    public weightedGraph()
-    // Instantiates a graph with capacity DEFCAP vertices.
-    {
-        System.out.println("top constructor");
+    public weightedGraph() {
         numVertices = 0;
-        maxVertices = DEFCAP;
-        vertices = (data[ ]) new Object[DEFCAP];
-        marks = new boolean[DEFCAP];
-        edges = new int[DEFCAP][DEFCAP];
+        maxVertices = maxSize;
+        vertices = (data[]) new Object[maxSize];
+        marks = new boolean[maxSize];
+        edges = new int[maxSize][maxSize];
     }
+
+    /** Instantiates a graph with defined capacity */
     @SuppressWarnings("unchecked")
-    public weightedGraph(int maxV)
-    // Instantiates a graph with capacity maxV.
-    {
-        System.out.println(" second constructor");
+    public weightedGraph(int size) {
         numVertices = 0;
-        maxVertices = maxV;
-        vertices = (data[ ]) new Object[maxV];
-        marks = new boolean[maxV];
-        edges = new int[maxV][maxV];
+        maxVertices = size;
+        vertices = (data[]) new Object[size];
+        marks = new boolean[size];
+        edges = new int[size][size];
     }
-    public void addVertex(data vertex)
-    // Preconditions:
-    //This graph is not full.
-    //Vertex is not already in this graph.
-    //Vertex is not null.
-    // Adds vertex to this graph.
-    {
+
+    public data getVertex() {
+        return node;
+    }
+
+    private void setVertex(data vertex) {
+        this.node = vertex;
+    }
+
+    private data[] getVertices() {
+        return vertices;
+    }
+
+    private void setVertices(data[] vertices) {
+        this.vertices = vertices;
+    }
+
+    /** Precondition: Graph is not Full, Vertex not in yet, vertex is not null;
+     * Adds vertex to graph. */
+    public void addVertex(data vertex) {
         System.out.println();
         System.out.println();
-        System.out.println("WEIGHTEDGRAPH");
-        System.out.println("addVertex");
+        System.out.println("Adding vertex: addVertex(data " + vertex + ")");
         vertices[numVertices] = vertex;
-        System.out.println("vertices["+numVertices+"]="+vertices[numVertices]+" vertex "+vertex);
-        for (int index = 0; index < numVertices; index++)
-        {
+
+        System.out.println("vertices[" + numVertices + "]= " + vertices[numVertices] + " vertex " + vertex);
+        for (int index = 0; index < numVertices; index++) {
             edges[numVertices][index] = NULL_EDGE;
-            System.out.println("edges ="+NULL_EDGE);
+            System.out.println("edges =" + NULL_EDGE);
             edges[index][numVertices] = NULL_EDGE;
-            System.out.println("edges ="+NULL_EDGE);
+            System.out.println("edges =" + NULL_EDGE);
         }
         numVertices++;
         setVertex(vertex);
     }
+
+    /** Adds new edges/tracts between vertex/nodes with weight values calculated
+     * @param startVertex
+     * @param endVertex
+     * @param weight*/
     @Override
-    public void addEdge(data startVertex, data endVertex, int weight) {
+    public void addEdge(String startVertex, String endVertex, double weight) {
         System.out.println();
-        System.out.println("addEdge");
+        System.out.println("Adding new Edge between start and end Vertex: addEdge()");
         int row;
         int column;
-        row = indexIs(startVertex);
-        column = indexIs(endVertex);
-        edges[row][column] = weight;
-        if(row<7 && column<7)
-        {
-            System.out.println("startVertex="+startVertex+" endVertex="+endVertex);
-            System.out.println("row="+row+" column="+column);
-            System.out.println("weight="+weight);
+
+        row = indexIs((data) startVertex);
+        column = indexIs((data) endVertex);
+        edges[row][column] = (int) weight;
+
+        if (row < 7 && column < 7) {
+            System.out.println("startVertex = " + startVertex + " endVertex = " + endVertex);
+            System.out.println("row = " + row + " column = " + column);
+            System.out.println("weight = " + weight);
         }
     }
 
+    /**Get index value of starting vertex in graph */
     @SuppressWarnings("unused")
-    private int indexIs(data startVertex)
-    {
-        index=0;
-        vertices= getVertices();
-        System.out.println("indexIs method");
-        System.out.println("startVertex="+startVertex);
-        if( startVertex==null || startVertex!=null)
-        {
-            setVertices(vertices);
-            return index;
-        }
-        else if(index<vertices.length)//(startVertex!=null && vertices[index]!=null)
-        {
-            System.out.println("vertices "+vertices[index]);
-            while (!startVertex.equals(vertices[index]) && index<vertices.length)
-            {
-                System.out.println("index="+index);
-                if(startVertex.equals(vertices[index]))
-                {
-                    setVertices(vertices);
-                    return index;
-                }
-                index++;
-            }
-        }
+    private int indexIs(data startVertex) {
+        count = 0;
+        vertices = getVertices();
+        System.out.println("indexIs method for starting vertex: ");
+        System.out.println("startVertex = " + startVertex);
         setVertices(vertices);
-        return index;
+        return count;
+
     }
+
+    /** Looks at current weighted graph and finds best path from start to end vertex in argument
+     * Returns true if a path exists. */
     @SuppressWarnings("unused")
-    public  boolean isPath(weightedGraph<String> graph, String startVertex, String endVertex) throws StackOverflowException,
-            StackUnderflowException, QueueUnderflowException
-    {
+    public boolean isPath(weightedGraph<String> graph, String startVertex, String endVertex) throws Overflow,
+            Underflow {
         System.out.println();
-        System.out.println("isPath");
-        UnboundedStackInterface<String> stack = new LinkedListStack<String> ();
-        UnboundedQueueInterface<String> vertexQueue = new LinkedUnbndQueue<String>();
+        UnboundedStackInterface<String> stack = new LinkedStack<String>();
+        UnboundedQueueInterface<String> vertexQueue = new LinkedUnboundQueue<>();
         boolean found = false;
-        String Vertex = null;//= (String) getVertex();
+        String Vertex = null;  // equals (String) getVertex();
         String item;
         graph.clearMarks();
         stack.push(startVertex);
-        do
-        {
+        do {
             System.out.println("START of do statement");
             Vertex = stack.top(Vertex);
             stack.pop();
-            if (Vertex .contains(endVertex))
-            {
-                System.out.println(Vertex+"vertex == endvertex"+endVertex);
-                System.out.println("just traveled from "+Vertex+" to "+endVertex);
+            if (Vertex.contains(endVertex)) {
+                System.out.println(Vertex + " vertex == endvertex" + endVertex);
+                System.out.println("just traveled from " + Vertex + " to " + endVertex);
+                System.out.println("distance is: " + graph);
                 found = true;
-            }
-            else
-            {
-                System.out.println(Vertex+" vertex != endvertex "+endVertex);
-                if (!graph.isMarked(Vertex))
-                {
+            } else {
+                System.out.println(Vertex + " vertex != endvertex " + endVertex);
+                if (!graph.isMarked(Vertex)) {
                     System.out.println("!graph.isMarked(vertex)");
                     graph.markVertex(Vertex);
-                    vertexQueue = graph.getToVertices(Vertex);//gets cities close by
-                    while (!vertexQueue.isEmpty())
-                    {
+                    vertexQueue = graph.getToVertices(Vertex); //gets cities close by
+                    while (!vertexQueue.isEmpty()) {
                         System.out.println("!vertexQueue.isEmpty()");
                         item = vertexQueue.dequeue();
                         if (!graph.isMarked(item))
                             stack.push(item);
                     }
                 }
-                System.out.println("unable to find other town");
+                System.out.println("unable to find other town/node.");
             }
         } while (!stack.isEmpty() && !found);
+
         return found;
     }
 
+    /** Resets marks in graph*/
     @Override
     public void clearMarks() {
-        // Sets marks for all vertices to false.
-        //numVertices = 0;
-        //vertices = (T[ ]) new Object[maxVertices];
-        //marks = new boolean[maxVertices];
-        //edges = new int[maxVertices][maxVertices];
-        if(isEmpty())
-        {
-            System.out.println("clearMarks");
-
-            for(int place=0; place<=maxVertices-1;place++)
-            {
-                if(marks[place]==true)
-                {
-                    System.out.println("marks==true");
-                    marks[place]=false;
+        if (isEmpty()) {
+            for (int place = 0; place <= maxVertices - 1; place++) {
+                if (marks[place]) {
+                    System.out.println("marks == true");
+                    marks[place] = false;
                 }
-                System.out.println("marks now "+marks[place]);
+                System.out.println("marks now " + marks[place]);
             }
-        }
-        else
-        {
+        } else {
             System.out.println("clearMarks empty");
         }
     }
+
+    /** Returns true if vertex is marked; otherwise, returns false. */
     @Override
     public boolean isMarked(String vertex) {
-        // Returns true if vertex is marked; otherwise, returns false.
-        if(vertex==null)
-        {
+        if (vertex == null) {
             System.out.println("not marked");
             return false;
         }
+
         System.out.println("isMarked");
         return true;
     }
+
+    /** Sets mark for vertex to true. */
     @Override
     public boolean markVertex(String vertex) {
-        // Sets mark for vertex to true.
         System.out.println("markVertex");
-        if(vertex==null)
-        {
-            for(index=0;index<=maxVertices-1;index++)//maxVertices
+        if (vertex == null) {
+            for (count = 0; count <= maxVertices - 1; count++)//maxVertices
             {
-                System.out.println(vertex+"!="+vertices[index]);
-                if(vertex==vertices[index] && vertices[index]==null)
-                {
-                    System.out.println(vertex+" vertex=vertices[index] "+vertices[index]);
-                    vertex=(String) vertices[index];
+                System.out.println(vertex + " != " + vertices[count]);
+                if (vertex == vertices[count] && vertices[count] == null) {
+                    System.out.println(vertex + " vertex = vertices[index] " + vertices[count]);
+                    vertex = (String) vertices[count];
                     return true;
                 }
             }
@@ -218,70 +193,74 @@ public class weightedGraph<data> implements WeightedGraphInterface<data>
         System.out.println("returns true");
         return true;
     }
+
+    /** Returns a queue of the vertices that are adjacent from defined vertex in argument */
     @SuppressWarnings("unchecked")
     @Override
     public UnboundedQueueInterface<String> getToVertices(String vertex) {
-        // Returns a queue of the vertices that are adjacent from vertex.
-        System.out.println("getToVertices");
-        System.out.println("vertex="+vertex);
-        UnboundedQueueInterface<data> adjVertices = new LinkedUnbndQueue<data>();
+        System.out.println("vertex = " + vertex);
+        UnboundedQueueInterface<data> adjVertices = new LinkedUnboundQueue<data>();
         int start;
         int end;
-        start = indexIs((T) vertex);
-        for (end = 0; end < numVertices; end++)
-        {
-            System.out.println("start="+start+" end"+end);
-            System.out.println("edges="+edges[start][end]+" nulledge="+ NULL_EDGE);
-            if (edges[start][end] != NULL_EDGE)// corrects start -1
+        start = indexIs((data) vertex);
+
+        for (end = 0; end < numVertices; end++) {
+            System.out.println("start = " + start + " end " + end);
+            System.out.println("edges = " + edges[start][end] + " nulledge = " + NULL_EDGE);
+            if (edges[start][end] != NULL_EDGE)  // corrects start -1
             {
-                System.out.println("start="+start+" end"+end);
-                System.out.println("edges="+edges[start][end]);
+                System.out.println("start = " + start + " end " + end);
+                System.out.println("edges = " + edges[start][end]);
                 adjVertices.enqueue(vertices[end]);
             }
         }
-        //System.out.println("end ="+vertices[end]);
         return (UnboundedQueueInterface<String>) adjVertices;
     }
-    public boolean isEmpty(weightedGraph<String> graph)
-    {
-        if(graph==null)
-        {
-            System.out.println("isEmpty");
+
+    /** Returns true if graph is empty, otherwise false. */
+    public boolean isEmpty(weightedGraph<String> graph) {
+        if (graph == null) {
+            System.out.println("isEmpty ");
             return true;
         }
-        System.out.println("notEmpty");
-        return false;
-    }
-    @Override
-    public boolean isFull()
-    {
-        System.out.println("isFull");
-        return getVertices().length==7;
-    }
-    @Override
-    public boolean hasVertex(data vertex) {
-        // Returns true if this graph contains vertex; otherwise, returns false.
-        System.out.println("hasVertex");
+        System.out.println("notEmpty ");
         return false;
     }
 
+    /** Returns true if graph is full, otherwise false. */
+    @Override
+    public boolean isFull() {
+        System.out.println("isFull ");
+        return getVertices().length == 7;
+    }
+
+    /** Returns true if this graph contains vertex; otherwise, returns false */
+    @Override
+    public boolean hasVertex(data vertex) {
+        System.out.println("hasVertex ");
+        return false;
+    }
+
+    /** Returns current weight between 'from' and 'to' vertex */
     @Override
     public int weightIs(data fromVertex, data toVertex) {
-        System.out.println("weightIs");
+        System.out.println("weightIs ");
         return 0;
     }
+
     @Override
-    public data getUnmarked()
-    {
-        System.out.println("getUnMarked");
+    public data getUnmarked() {
+        System.out.println("getUnMarked ");
         return null;
     }
+
+    /** Returns true if graph has no vertices, otherwise false. */
     @Override
-    public boolean isEmpty()
-    {
-        System.out.println("isEmpty()");
-        if(getVertices().length==-1)
-        {return getVertices().length==-1;}
+    public boolean isEmpty() {
+        System.out.println("isEmpty() ");
+        if (getVertices().length == -1) {
+            return true;
+        }
         return true;
     }
 }

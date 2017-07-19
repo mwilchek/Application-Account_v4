@@ -7,5 +7,6 @@ import java.io.Serializable;
  */
 public interface Iterator<data extends Comparable> extends Serializable {
     public void reset();
+
     public data getNext(data element);
 }

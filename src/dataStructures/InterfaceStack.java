@@ -4,7 +4,9 @@ import exceptions.Overflow;
 import exceptions.Underflow;
 
 
-/**Stack requires: Push, pop, top, isEmpty, isFull (array), size, toString */
+/**
+ * Stack requires: Push, pop, top, isEmpty, isFull (array), size, toString
+ */
 
 interface InterfaceStack<data> {
 

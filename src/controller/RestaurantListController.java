@@ -8,6 +8,8 @@ import com.lynden.gmapsfx.service.directions.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
 import com.lynden.gmapsfx.service.geocoding.GeocodingService;
+import dataStructures.AntColonyOptimization;
+import dataStructures.Heap;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -20,8 +22,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import views.RestaurantListDriver;
-
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -64,6 +64,8 @@ public class RestaurantListController implements Initializable, MapComponentInit
     @FXML
     private TableColumn<Restaurant, String> photoColumn;
     @FXML
+    TextField toName;
+    @FXML
     GoogleMapView selectedMap;
     @FXML
     ImageView profilePic;
@@ -100,6 +102,7 @@ public class RestaurantListController implements Initializable, MapComponentInit
         restaurantTable.setItems(restaurantApp.getRestaurantData());
     }
 
+    /** Call Google API to initialize Google Map View with a default view of the United States when logged in*/
     @Override
     public void mapInitialized() {
         geocodingService = new GeocodingService();
@@ -173,11 +176,17 @@ public class RestaurantListController implements Initializable, MapComponentInit
         }
     }
 
+    /** Call Google API Geo-coding Service to geocode from/original address, then loop through dataset addresses,
+     * geo-coding each one, and updating table view with filtered data based on distance selected.
+     *
+     * Also adds the filtered data as a new mini-heap and then made into a graph data structure*/
     @FXML
     public void addressTextFieldAction(ActionEvent event) {
         ObservableList<Restaurant> searchRestaurantResultTable = FXCollections.observableArrayList();
         System.out.println("Miles selected = " + milesChoice.getValue());
         System.out.println(address.get());
+
+
 
         geocodingService.geocode(address.get(), (GeocodingResult[] results, GeocoderStatus status) -> {
 
@@ -200,6 +209,8 @@ public class RestaurantListController implements Initializable, MapComponentInit
             }
 
             map.setCenter(latLong);
+            Heap<String> miniHeap = new Heap<>(restaurantTable.getItems().size());
+            AntColonyOptimization restaurantACO = new AntColonyOptimization(restaurantTable.getItems().size());
 
             for (int index = 0; index < restaurantTable.getItems().size(); index++) {
                 Restaurant temp = restaurantTable.getItems().get(index);
@@ -207,14 +218,21 @@ public class RestaurantListController implements Initializable, MapComponentInit
                 tempLon = Double.parseDouble(temp.getLongitude());
                 String tempAddress = (temp.getStreetAddress() + " " + temp.getCity() + " " + temp.getState() + " "
                         + temp.getZip().substring(0, 5));
+
                 // Get distance for From and To
                 distance = getDistance(addressLat, addressLon, tempLat, tempLon);
                 System.out.println("Your Location Distance: " + addressLat + ", " + addressLon);
                 System.out.println(tempAddress + ": " + tempLat + ", " + tempLon);
                 System.out.println("Total Distance: " + distance);
 
-                if (distance <= milesChoice.getValue()){
+                if (distance <= milesChoice.getValue()) {
                     searchRestaurantResultTable.add(restaurantApp.getRestaurantBSTree().get(temp));
+                    try {
+                        miniHeap.enqueue(restaurantApp.getRestaurantBSTree().get(temp).toString());
+                        miniHeap.moveToGraph(distance);  //moves elements to graph using distance as weight
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     //Add a marker to the map
                     MarkerOptions markerOptions = new MarkerOptions();
@@ -230,13 +248,20 @@ public class RestaurantListController implements Initializable, MapComponentInit
                 }
             }
             restaurantTable.setItems(searchRestaurantResultTable);
+
+            System.out.println("After implementing the ACO algorithm the following would be the best order, " +
+                    "based on number of locations: ");
+            restaurantACO.solve();
+
             // Reset the data
             addressLat = 0.0;
             addressLon = 0.0;
         });
-        searchRestaurantResultTable.clear();
+        searchRestaurantResultTable.clear(); //reset filtered data in table
     }
 
+    /** When a new row in the data set is selected. Show location and get directions of original address
+     * has an initial vertex/node or been previously geocoded. */
     @FXML
     private void handleRowSelect(MouseEvent event) {
         if (event.getClickCount() == 2) {
@@ -275,6 +300,7 @@ public class RestaurantListController implements Initializable, MapComponentInit
                 String rowAddress = (row.getStreetAddress() + " " + row.getCity() + " " + row.getState() + " "
                         + row.getZip().substring(0, 5));
                 toTextField.setText(rowAddress);
+                toName.setText(row.getName());
 
                 if (from.get() != ""){
                     DirectionsService directionsService = new DirectionsService();
@@ -287,6 +313,7 @@ public class RestaurantListController implements Initializable, MapComponentInit
         }
     }
 
+    /** Use the Haversine formula for distance between 2 coordinates */
     private double getDistance(double lat1, double lon1, double lat2, double lon2) {
         double theta = lon1 - lon2;
         double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))

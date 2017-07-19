@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.13" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="901.0" prefWidth="1268.0" styleClass="root3" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RestaurantListController">
+<SplitPane dividerPositions="0.13" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="901.0" prefWidth="1268.0" styleClass="root3" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RestaurantListController">
     <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="143.0" prefWidth="1266.0">
             <children>
@@ -71,7 +71,13 @@
                 </TableView>
             </ScrollPane>
             <GoogleMapView fx:id="selectedMap" layoutX="678.0" layoutY="190.0" prefHeight="589.0" prefWidth="589.0" />
-            <ImageView id="profilePic" fitHeight="170.0" fitWidth="230.0" layoutX="1030.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="profilePic" fitHeight="170.0" fitWidth="230.0" layoutX="1030.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+            <TextField fx:id="toName" layoutX="678.0" layoutY="40.0"  />
+            <Label layoutX="678.0" layoutY="10.0" prefHeight="27.0" prefWidth="252.0" text="Selected Restaurant:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold Italic" size="18.0" />
+               </font>
+            </Label>
             </children>
         </AnchorPane>
     </items>

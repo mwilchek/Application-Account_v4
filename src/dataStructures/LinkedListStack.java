@@ -5,11 +5,11 @@ import exceptions.Underflow;
 public class LinkedListStack<data> implements InterfaceLinkedListStack<data> {
 
     private LinkedListNode<data> top;
-    private int numElement=0;
+    private int numElement = 0;
 
     @Override
     public data top() throws Underflow {
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new Underflow("Stack is empty. Cannot top()");
         }
         return top.getElement();
@@ -35,7 +35,7 @@ public class LinkedListStack<data> implements InterfaceLinkedListStack<data> {
 
     @Override
     public boolean isEmpty() {
-        return (numElement==0);
+        return (numElement == 0);
     }
 
     @Override
@@ -50,9 +50,9 @@ public class LinkedListStack<data> implements InterfaceLinkedListStack<data> {
 
     public String toString() {
         LinkedListNode<data> current = top;
-        String list="";
-        while(current!=null) {
-            list+= current.getElement() + "\t";
+        String list = "";
+        while (current != null) {
+            list += current.getElement() + "\t";
             current = current.getPointer();
         }
         return list;

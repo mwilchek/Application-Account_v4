@@ -2,7 +2,9 @@ package dataStructures;
 
 
 public class BSTNode<data extends Comparable<data>> {
-    /**Used to hold references to BST nodes for the linked implementation */
+    /**
+     * Used to hold references to BST nodes for the linked implementation
+     */
     protected data info;                // The info in a BST node
     protected BSTNode<data> left;       // A link to the left child node
     protected BSTNode<data> right;      // A link to the right child node
@@ -13,32 +15,44 @@ public class BSTNode<data extends Comparable<data>> {
         right = null;
     }
 
-    /**Returns info of the BSTNode */
+    /**
+     * Returns info of the BSTNode
+     */
     public data getInfo() {
         return info;
     }
 
-    /**Sets info of the BSTNode */
+    /**
+     * Sets info of the BSTNode
+     */
     public void setInfo(data info) {
         this.info = info;
     }
 
-    /**Returns left link of the BSTNode */
+    /**
+     * Returns left link of the BSTNode
+     */
     public BSTNode<data> getLeft() {
         return left;
     }
 
-    /**Sets left link of the BSTNode */
+    /**
+     * Sets left link of the BSTNode
+     */
     public void setLeft(BSTNode<data> link) {
         left = link;
     }
 
-    /** Returns right link of the BSTNode */
+    /**
+     * Returns right link of the BSTNode
+     */
     public BSTNode<data> getRight() {
         return right;
     }
 
-    /** Sets right link of the BSTNode */
+    /**
+     * Sets right link of the BSTNode
+     */
     public void setRight(BSTNode<data> link) {
         right = link;
     }

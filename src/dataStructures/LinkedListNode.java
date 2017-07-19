@@ -2,9 +2,6 @@ package dataStructures;
 
 import java.io.Serializable;
 
-/**
- * Created by Matt on 6/14/2017.
- */
 public class LinkedListNode<data> implements Serializable {
 
     LinkedListNode pointer;

@@ -5,7 +5,9 @@ import exceptions.IndexOutOfBounds;
 
 import java.io.Serializable;
 
-/**Ordered List requires: add, remove, contains, isEmpty, size, get, toString, reset, getNext */
+/**
+ * Ordered List requires: add, remove, contains, isEmpty, size, get, toString, reset, getNext
+ */
 
 interface InterfaceOrderedList<data extends Comparable> extends Iterator<data>, Serializable {
 
@@ -17,7 +19,7 @@ interface InterfaceOrderedList<data extends Comparable> extends Iterator<data>, 
 
     boolean contains(data element) throws IndexOutOfBounds, Duplicate;
 
-    data get(data element) throws  IndexOutOfBounds;
+    data get(data element) throws IndexOutOfBounds;
 
     String toString();
 
